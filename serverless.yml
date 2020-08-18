@@ -115,6 +115,8 @@ custom:
   pythonRequirements:
     dockerizePip: non-linux
     noDeploy: []
+    zip: true
+    slim: true
   OPENCV_PROCESS_BUCKET: devopstar-opencv-processing-bucket
   OPENCV_OUTPUT_BUCKET: devopstar-opencv-output-bucket
 

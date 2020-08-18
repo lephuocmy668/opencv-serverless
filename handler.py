@@ -1,7 +1,11 @@
+try:
+  import unzip_requirements
+except ImportError:
+  pass
+
 import json
 import boto3
 import cv2
-# import numpy as np
 import uuid
 import os
 
@@ -32,6 +36,47 @@ def predict_one_image(img, model):
 
     print('Model process on %.2f s' % (end - start))
     return processed_image
+
+def do():
+    input_video = "test_video/test.MOV"
+    output_video = "output/output_test.MOV"
+
+    video_size = (1920, 1080)
+
+    # remove existed output video
+    if os.path.exists(output_video):
+        os.remove(output_video)
+        print("Removed {}".format(output_video))
+
+    # video path
+    cap = cv2.VideoCapture(input_video)
+    out = cv2.VideoWriter(output_video, -1, 20.0, video_size)
+
+    # load model
+    model = E2E()
+
+    while cap.isOpened():
+        ret, frame = cap.read()
+        if frame is None:
+            print("[INFO] End of Video")
+            break
+
+        # frame = cv2.rotate(frame, cv2.ROTATE_90_CLOCKWISE)
+        frame = cv2.resize(frame, video_size)
+        try:
+            processed_frame = predict_one_image(frame, model)
+        except:
+            processed_frame = frame
+
+        cv2.imshow('video', processed_frame)
+        out.write(processed_frame)
+
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+
+    cap.release()
+    cv2.destroyAllWindows()
+
 
 def opencv(event, context):
     bucketName = event['Records'][0]['s3']['bucket']['name']
